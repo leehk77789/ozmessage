@@ -1,45 +1,85 @@
 import React from 'react';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
-import { Container, Box, Typography } from '@mui/material';
-import MessageForm from './components/MessageForm';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import MessageList from './components/MessageList';
+import AdminLogin from './components/AdminLogin';
+import MessageForm from './components/MessageForm';
 
 const theme = createTheme({
   palette: {
     primary: {
-      main: '#2196f3',
+      main: '#A7C957', // 따뜻한 녹색
+      light: '#DDE5B6',
+      dark: '#6A994E',
     },
     secondary: {
-      main: '#f50057',
+      main: '#BC6C25', // 따뜻한 브라운
+      light: '#DDA15E',
+      dark: '#8C4516',
     },
     background: {
-      default: '#f5f5f5',
+      default: '#F8F4E3', // 따뜻한 베이지
+      paper: '#FEFAE0',
     },
+    text: {
+      primary: '#5F4B32', // 따뜻한 다크 브라운
+      secondary: '#735F45',
+    }
   },
   typography: {
-    fontFamily: '"Noto Sans KR", "Roboto", "Helvetica", "Arial", sans-serif',
+    fontFamily: '"Gaegu", "Noto Sans KR", "Roboto", sans-serif',
+    h4: {
+      fontWeight: 700,
+      color: '#5F4B32',
+    },
+    h6: {
+      fontWeight: 600,
+      color: '#5F4B32',
+    },
+    body1: {
+      color: '#5F4B32',
+    }
+  },
+  components: {
+    MuiButton: {
+      styleOverrides: {
+        root: {
+          borderRadius: 8,
+          textTransform: 'none',
+          fontWeight: 600,
+        },
+      },
+    },
+    MuiPaper: {
+      styleOverrides: {
+        root: {
+          borderRadius: 12,
+          boxShadow: '0 4px 20px rgba(95, 75, 50, 0.1)',
+        },
+      },
+    },
   },
 });
 
-function App() {
+const App: React.FC = () => {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <Container maxWidth="md">
-        <Box sx={{ my: 4 }}>
-          <Typography variant="h3" component="h1" gutterBottom align="center" color="primary">
-            타임캡슐
-          </Typography>
-          <Typography variant="h6" component="h2" gutterBottom align="center" color="text.secondary">
-            6개월 후의 나에게 보내는 메시지
-          </Typography>
-          <MessageForm />
-          <MessageList />
-        </Box>
-      </Container>
+      <Router>
+        <Routes>
+          <Route path="/" element={<MessageForm />} />
+          <Route path="/admin/login" element={<AdminLogin />} />
+          <Route path="/admin/messages" element={
+            localStorage.getItem('isAdmin') === 'true' ? 
+            <MessageList /> : 
+            <Navigate to="/admin/login" replace />
+          } />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </Router>
     </ThemeProvider>
   );
-}
+};
 
 export default App;

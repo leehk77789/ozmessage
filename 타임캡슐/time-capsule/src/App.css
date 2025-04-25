@@ -36,3 +36,228 @@
     transform: rotate(360deg);
   }
 }
+
+/* 따뜻한 색감의 지브리 스타일 배경 및 디자인 */
+body {
+  font-family: 'Gaegu', 'Noto Sans KR', sans-serif;
+  background-color: #F8F4E3;
+  color: #5F4B32;
+}
+
+.ghibli-background {
+  position: relative;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #F8F4E3 0%, #DDE5B6 100%);
+  position: relative;
+}
+
+.ghibli-background::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: url('/images/grass-pattern.svg');
+  background-size: 200px;
+  opacity: 0.15;
+  pointer-events: none;
+}
+
+.ghibli-container {
+  position: relative;
+  z-index: 1;
+}
+
+.ghibli-paper {
+  background-color: #FEFAE0 !important;
+  border: 1px solid #DDE5B6 !important;
+  border-radius: 16px !important;
+  box-shadow: 0 4px 20px rgba(95, 75, 50, 0.1) !important;
+}
+
+.ghibli-title {
+  color: #5F4B32 !important;
+  font-family: 'Gaegu', 'Noto Sans KR', sans-serif !important;
+  font-weight: 700 !important;
+  font-size: 2.5rem !important;
+}
+
+.ghibli-subtitle {
+  color: #5F4B32 !important;
+  font-family: 'Gaegu', 'Noto Sans KR', sans-serif !important;
+  font-weight: 600 !important;
+  font-size: 1.8rem !important;
+}
+
+.ghibli-text {
+  color: #5F4B32 !important;
+  font-family: 'Noto Sans KR', sans-serif !important;
+  font-size: 1.2rem !important;
+}
+
+.ghibli-button {
+  background-color: #A7C957 !important;
+  color: #FEFAE0 !important;
+  border-radius: 8px !important;
+  font-weight: 600 !important;
+  text-transform: none !important;
+  transition: all 0.3s ease !important;
+}
+
+.ghibli-button:hover {
+  background-color: #6A994E !important;
+  box-shadow: 0 4px 10px rgba(106, 153, 78, 0.3) !important;
+}
+
+.ghibli-button-secondary {
+  color: #BC6C25 !important;
+  border-color: #BC6C25 !important;
+}
+
+.ghibli-button-secondary:hover {
+  background-color: rgba(188, 108, 37, 0.1) !important;
+}
+
+.clouds {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.cloud {
+  position: absolute;
+  background: rgba(255, 255, 255, 0.7);
+  border-radius: 50%;
+  animation: float linear infinite;
+}
+
+.cloud-1 {
+  width: 200px;
+  height: 60px;
+  top: 20%;
+  left: -200px;
+  animation-duration: 80s;
+}
+
+.cloud-2 {
+  width: 300px;
+  height: 80px;
+  top: 10%;
+  left: -300px;
+  animation-duration: 120s;
+}
+
+.cloud-3 {
+  width: 150px;
+  height: 40px;
+  top: 30%;
+  left: -150px;
+  animation-duration: 60s;
+}
+
+@keyframes float {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(calc(100vw + 300px));
+  }
+}
+
+/* 애니메이션 커스텀 스타일 */
+.ghibli-animation {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #F8F4E3;
+  background-image: linear-gradient(to bottom, #6DAEDB 0%, #A7C957 100%);
+  z-index: 9999;
+  overflow: hidden;
+}
+
+.ghibli-animation::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: url('/images/grass-pattern.svg');
+  background-size: 200px;
+  opacity: 0.1;
+  pointer-events: none;
+}
+
+.ghibli-message-container {
+  color: #3D2C17;
+  font-family: 'Gaegu', 'Noto Sans KR', sans-serif;
+  background-color: transparent;
+}
+
+/* 반응형 글꼴 크기 */
+@media (max-width: 768px) {
+  .ghibli-title {
+    font-size: 2rem !important;
+  }
+  
+  .ghibli-subtitle {
+    font-size: 1.5rem !important;
+  }
+  
+  .ghibli-text {
+    font-size: 1.1rem !important;
+  }
+}
+
+/* 입력 폼 스타일링 */
+.MuiOutlinedInput-root {
+  background-color: rgba(255, 255, 255, 0.9) !important;
+  border-radius: 8px !important;
+}
+
+.MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline {
+  border-color: #6A994E !important;
+  border-width: 2px !important;
+}
+
+.MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline {
+  border-color: #6A994E !important;
+  border-width: 2px !important;
+}
+
+.MuiFormLabel-root.Mui-focused {
+  color: #6A994E !important;
+}
+
+/* select 드롭다운 메뉴 스타일링 */
+.MuiMenu-paper {
+  background-color: #FEFAE0 !important;
+  border: 1px solid #DDE5B6 !important;
+  border-radius: 8px !important;
+  box-shadow: 0 4px 20px rgba(95, 75, 50, 0.15) !important;
+}
+
+/* 반응형 입력 필드 스타일링 */
+@media (max-width: 768px) {
+  .MuiFormLabel-root {
+    font-size: 1.1rem !important;
+  }
+  
+  .MuiInputBase-input {
+    font-size: 1.1rem !important;
+    padding: 12px !important;
+  }
+  
+  .ghibli-button {
+    font-size: 1.2rem !important;
+    padding: 10px 0 !important;
+  }
+}
