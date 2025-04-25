@@ -14,15 +14,32 @@ const AdminLogin: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError('');
+    
     try {
       if (email !== ADMIN_EMAIL) {
         setError('관리자 이메일이 아닙니다.');
         return;
       }
-      await signInWithEmailAndPassword(auth, email, password);
-      navigate('/admin/messages');
+      
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      
+      // 로그인 성공 시 관리자 권한 부여 - localStorage에 저장하고 세션 스토리지에도 저장
+      if (userCredential.user) {
+        // 권한 부여를 위해 localStorage와 sessionStorage 모두 사용
+        localStorage.setItem('isAdmin', 'true');
+        sessionStorage.setItem('isAdmin', 'true');
+        
+        // 잠시 대기 후 이동 (상태 업데이트 대기)
+        setTimeout(() => {
+          navigate('/admin/messages');
+        }, 500);
+      }
     } catch (err) {
+      console.error('로그인 실패:', err);
       setError('이메일 또는 비밀번호가 올바르지 않습니다.');
+      localStorage.removeItem('isAdmin');
+      sessionStorage.removeItem('isAdmin');
     }
   };
 

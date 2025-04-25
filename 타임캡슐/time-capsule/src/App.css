@@ -44,6 +44,38 @@ body {
   color: #5F4B32;
 }
 
+/* 재생 모드일 때 navbar 숨김 */
+body.playing-mode header,
+body.playing-mode nav,
+body.playing-mode .navbar,
+body.playing-mode .MuiAppBar-root,
+body.playing-mode .MuiToolbar-root,
+body.playing-mode div[role="navigation"],
+body.playing-mode .app-bar,
+body.playing-mode .header,
+body.playing-mode .top-bar,
+body.playing-mode .nav-container,
+body.playing-mode #navbar,
+body.playing-mode #header,
+body.playing-mode #nav,
+body.playing-mode nav *,
+body.playing-mode header * {
+  display: none !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+  height: 0 !important;
+  overflow: hidden !important;
+  position: absolute !important;
+  top: -9999px !important;
+}
+
+body.playing-mode {
+  overflow: hidden !important;
+  padding-top: 0 !important;
+  margin-top: 0 !important;
+}
+
 .ghibli-background {
   position: relative;
   min-height: 100vh;

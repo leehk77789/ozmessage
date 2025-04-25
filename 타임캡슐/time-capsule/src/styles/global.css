@@ -1,0 +1,401 @@
+/* 글로벌 애니메이션 및 스타일 */
+@import url('https://fonts.googleapis.com/css2?family=Gaegu:wght@300;400;700&family=Noto+Sans+KR:wght@300;400;500;700&display=swap');
+
+:root {
+  --primary: #A7C957;
+  --primary-light: #DDE5B6;
+  --primary-dark: #6A994E;
+  --secondary: #BC6C25;
+  --secondary-light: #DDA15E;
+  --secondary-dark: #8C4516;
+  --background: #F8F4E3;
+  --paper: #FEFAE0;
+  --text-primary: #5F4B32;
+  --text-secondary: #735F45;
+}
+
+body {
+  margin: 0;
+  font-family: 'Noto Sans KR', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: var(--background);
+  overflow-x: hidden;
+}
+
+/* 배경 스타일 */
+.ghibli-background {
+  position: relative;
+  min-height: calc(100vh - 64px);
+  width: 100%;
+  background: linear-gradient(180deg, #F8F4E3 0%, #F0EAD6 100%);
+  overflow: hidden;
+}
+
+/* 구름 애니메이션 */
+.clouds {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.cloud {
+  position: absolute;
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 30" preserveAspectRatio="none"><path fill="white" opacity="0.8" d="M0 30 Q 30 5, 50 15 T 100 30 z" /></svg>');
+  background-repeat: no-repeat;
+  background-size: contain;
+  filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.05));
+}
+
+.cloud-1 {
+  width: 300px;
+  height: 100px;
+  top: 5%;
+  left: -150px;
+  opacity: 0.7;
+  animation: cloud-move-1 120s linear infinite;
+}
+
+.cloud-2 {
+  width: 200px;
+  height: 80px;
+  top: 25%;
+  left: -100px;
+  opacity: 0.5;
+  animation: cloud-move-2 80s linear infinite;
+}
+
+.cloud-3 {
+  width: 250px;
+  height: 90px;
+  top: 50%;
+  left: -120px;
+  opacity: 0.4;
+  animation: cloud-move-3 100s linear infinite;
+}
+
+@keyframes cloud-move-1 {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(calc(100vw + 300px)); }
+}
+
+@keyframes cloud-move-2 {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(calc(100vw + 200px)); }
+}
+
+@keyframes cloud-move-3 {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(calc(100vw + 250px)); }
+}
+
+/* 콘텐츠 컨테이너 */
+.ghibli-container {
+  position: relative;
+  z-index: 1;
+  padding: 20px 0;
+}
+
+/* 종이 스타일 */
+.ghibli-paper {
+  background-color: var(--paper) !important;
+  border-radius: 16px !important;
+  box-shadow: 0 8px 32px rgba(95, 75, 50, 0.15) !important;
+  transition: transform 0.3s ease, box-shadow 0.3s ease !important;
+  position: relative;
+  overflow: hidden;
+}
+
+.ghibli-paper::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.3) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  transform: skewX(-25deg);
+  animation: shimmer 8s infinite;
+  pointer-events: none;
+}
+
+@keyframes shimmer {
+  0% { left: -100%; }
+  20% { left: 120%; }
+  100% { left: 120%; }
+}
+
+/* 호버 효과 */
+.ghibli-paper:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 36px rgba(95, 75, 50, 0.2) !important;
+}
+
+/* 텍스트 스타일 */
+.ghibli-title {
+  font-family: 'Gaegu', cursive !important;
+  position: relative;
+  display: inline-block;
+}
+
+.ghibli-title::after {
+  content: '';
+  position: absolute;
+  width: 100%;
+  transform: scaleX(0);
+  height: 3px;
+  bottom: -5px;
+  left: 0;
+  background-color: var(--primary);
+  transform-origin: bottom right;
+  transition: transform 0.3s ease-out;
+}
+
+.ghibli-title:hover::after {
+  transform: scaleX(1);
+  transform-origin: bottom left;
+}
+
+.ghibli-subtitle {
+  font-family: 'Gaegu', cursive !important;
+}
+
+.ghibli-text {
+  color: var(--text-primary) !important;
+}
+
+/* 버튼 스타일 */
+.ghibli-button {
+  background-color: var(--primary) !important;
+  color: white !important;
+  font-weight: 600 !important;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+  overflow: hidden;
+  position: relative;
+}
+
+.ghibli-button::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 5px;
+  height: 5px;
+  background: rgba(255, 255, 255, 0.5);
+  opacity: 0;
+  border-radius: 50%;
+  transform: scale(1, 1) translate(-50%, -50%);
+  transform-origin: 50% 50%;
+}
+
+.ghibli-button:active::after {
+  opacity: 0.3;
+  transform: scale(80, 80) translate(-50%, -50%);
+  transition: transform 0.5s, opacity 0.4s;
+}
+
+.ghibli-button:hover {
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 6px 12px rgba(167, 201, 87, 0.3) !important;
+}
+
+.ghibli-button:active {
+  transform: translateY(0) scale(0.98);
+}
+
+.ghibli-button-secondary {
+  color: var(--secondary) !important;
+  border-color: var(--secondary) !important;
+  background-color: transparent !important;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+}
+
+.ghibli-button-secondary:hover {
+  background-color: rgba(188, 108, 37, 0.1) !important;
+  transform: translateY(-3px);
+}
+
+/* 입력 필드 스타일 */
+.MuiOutlinedInput-root {
+  transition: transform 0.3s ease !important;
+}
+
+.MuiOutlinedInput-root.Mui-focused {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 8px rgba(95, 75, 50, 0.1) !important;
+}
+
+/* 페이지 전환 애니메이션 */
+.page-transition-enter {
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.page-transition-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 400ms, transform 400ms;
+}
+
+.page-transition-exit {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.page-transition-exit-active {
+  opacity: 0;
+  transform: translateY(-20px);
+  transition: opacity 300ms, transform 300ms;
+}
+
+/* 페이지네이션 스타일 */
+.MuiPagination-root .MuiPaginationItem-root {
+  transition: transform 0.2s ease, background-color 0.2s ease !important;
+}
+
+.MuiPagination-root .MuiPaginationItem-root:hover {
+  transform: scale(1.1);
+}
+
+.MuiPagination-root .Mui-selected {
+  background-color: var(--primary) !important;
+  color: white !important;
+}
+
+/* 메시지 아이템 애니메이션 */
+.message-item-enter {
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.message-item-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 400ms, transform 400ms;
+}
+
+.message-item-exit {
+  opacity: 1;
+}
+
+.message-item-exit-active {
+  opacity: 0;
+  transform: translateY(-20px);
+  transition: opacity 300ms, transform 300ms;
+}
+
+/* 성공 메시지 애니메이션 */
+.success-message {
+  animation: success-appear 0.5s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+}
+
+@keyframes success-appear {
+  0% {
+    opacity: 0;
+    transform: translateY(10px) scale(0.8);
+  }
+  50% {
+    transform: translateY(-5px) scale(1.05);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* 무비 크레딧 스타일 개선 */
+.movie-credits {
+  background: radial-gradient(circle, rgba(30, 30, 30, 0.95) 0%, rgba(0, 0, 0, 0.98) 100%) !important;
+}
+
+/* 필로모피즘(Neumorphism) 효과 */
+.neumorphic {
+  background: var(--paper);
+  border-radius: 16px;
+  box-shadow: 8px 8px 16px rgba(95, 75, 50, 0.15),
+              -8px -8px 16px rgba(255, 255, 255, 0.7);
+}
+
+.neumorphic-inset {
+  background: var(--paper);
+  border-radius: 16px;
+  box-shadow: inset 5px 5px 10px rgba(95, 75, 50, 0.15),
+              inset -5px -5px 10px rgba(255, 255, 255, 0.7);
+}
+
+/* 로딩 애니메이션 */
+.loading-dots span {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--primary);
+  margin: 0 3px;
+}
+
+.loading-dots span:nth-child(1) {
+  animation: bounce 1s infinite 0s;
+}
+.loading-dots span:nth-child(2) {
+  animation: bounce 1s infinite 0.2s;
+}
+.loading-dots span:nth-child(3) {
+  animation: bounce 1s infinite 0.4s;
+}
+
+@keyframes bounce {
+  0%, 80%, 100% { transform: translateY(0); }
+  40% { transform: translateY(-10px); }
+}
+
+/* 반응형 조정 */
+@media (max-width: 600px) {
+  .ghibli-paper {
+    padding: 16px !important;
+  }
+  
+  .ghibli-title {
+    font-size: 2.2rem !important;
+  }
+  
+  .ghibli-subtitle {
+    font-size: 1.5rem !important;
+  }
+}
+
+/* 글자 깜빡임 효과 */
+.text-blink {
+  animation: text-fade 2s infinite;
+}
+
+@keyframes text-fade {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+/* 타임캡슐 애니메이션 */
+@keyframes twinkle {
+  0% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.5); opacity: 0.7; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0px); }
+}
+
+@keyframes fadeIn {
+  0% { opacity: 0; transform: scale(0.9); }
+  100% { opacity: 1; transform: scale(1); }
+} 
