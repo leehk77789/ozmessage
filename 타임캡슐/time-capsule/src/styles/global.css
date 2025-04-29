@@ -235,15 +235,24 @@ body {
 }
 
 /* 페이지 전환 애니메이션 */
+.page-transition-appear {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.page-transition-appear-active {
+  opacity: 1;
+  transform: translateY(0);
+}
+
 .page-transition-enter {
-  opacity: 0;
-  transform: translateY(20px);
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .page-transition-enter-active {
   opacity: 1;
   transform: translateY(0);
-  transition: opacity 400ms, transform 400ms;
 }
 
 .page-transition-exit {
@@ -253,8 +262,8 @@ body {
 
 .page-transition-exit-active {
   opacity: 0;
-  transform: translateY(-20px);
-  transition: opacity 300ms, transform 300ms;
+  transform: translateY(0);
+  transition: opacity 300ms;
 }
 
 /* 페이지네이션 스타일 */
@@ -273,14 +282,13 @@ body {
 
 /* 메시지 아이템 애니메이션 */
 .message-item-enter {
-  opacity: 0;
-  transform: translateY(20px);
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .message-item-enter-active {
   opacity: 1;
   transform: translateY(0);
-  transition: opacity 400ms, transform 400ms;
 }
 
 .message-item-exit {
@@ -289,26 +297,30 @@ body {
 
 .message-item-exit-active {
   opacity: 0;
-  transform: translateY(-20px);
-  transition: opacity 300ms, transform 300ms;
+  transform: translateY(0);
+  transition: opacity 300ms;
 }
 
 /* 성공 메시지 애니메이션 */
 .success-message {
   animation: success-appear 0.5s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+  transform: translate(-50%, -50%) !important;
+  top: 50% !important;
+  left: 50% !important;
+  position: fixed !important;
 }
 
 @keyframes success-appear {
   0% {
     opacity: 0;
-    transform: translateY(10px) scale(0.8);
+    transform: translate(-50%, -50%) scale(0.8);
   }
   50% {
-    transform: translateY(-5px) scale(1.05);
+    transform: translate(-50%, -50%) scale(1.05);
   }
   100% {
     opacity: 1;
-    transform: translateY(0) scale(1);
+    transform: translate(-50%, -50%) scale(1);
   }
 }
 

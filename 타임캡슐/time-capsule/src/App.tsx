@@ -101,6 +101,9 @@ const AnimatedRoutes = ({ isAuthenticated, isAdmin }: { isAuthenticated: boolean
         classNames="page-transition"
         timeout={400}
         nodeRef={nodeRef}
+        appear={true}
+        enter={false}
+        exit={false}
       >
         <Box ref={nodeRef} sx={{ position: 'relative', width: '100%', overflow: 'hidden' }}>
           <Routes location={location}>
