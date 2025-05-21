@@ -177,7 +177,6 @@ const MessageForm: React.FC = () => {
       return base64Image;
       
     } catch (error) {
-      console.error("이미지 처리 중 오류 발생:", error);
       alert('이미지 처리 중 오류가 발생했습니다. 다시 시도해주세요.');
       return '';
     } finally {
@@ -252,7 +251,6 @@ const MessageForm: React.FC = () => {
       }, 4000);
       
     } catch (error) {
-      console.error("메시지 저장 중 오류 발생:", error);
       alert('메시지 저장에 실패했습니다. 다시 시도해주세요.');
     } finally {
       setUploading(false);

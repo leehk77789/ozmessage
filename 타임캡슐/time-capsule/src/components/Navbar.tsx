@@ -9,13 +9,18 @@ import {
   useMediaQuery,
   IconButton,
   Menu,
-  MenuItem
+  MenuItem,
+  Tooltip
 } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import MenuIcon from '@mui/icons-material/Menu';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { auth } from '../firebase';
 import { onAuthStateChanged } from 'firebase/auth';
+import LockIcon from '@mui/icons-material/Lock';
+import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
+import { useAuth } from '../contexts/AuthContext';
+import { motion } from 'framer-motion';
 
 const Navbar: React.FC = () => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
@@ -27,6 +32,7 @@ const Navbar: React.FC = () => {
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const navigate = useNavigate();
   const location = useLocation();
+  const { currentUser, isAdmin: authAdmin } = useAuth();
   
   // 로그인 상태 확인
   useEffect(() => {
@@ -66,7 +72,7 @@ const Navbar: React.FC = () => {
       sessionStorage.removeItem('isAdmin');
       navigate('/admin/login');
     } catch (error) {
-      console.error('로그아웃 실패:', error);
+      // console.error('로그아웃 실패:', error);
     }
     handleClose();
   };
@@ -88,20 +94,27 @@ const Navbar: React.FC = () => {
     >
       <Container maxWidth="lg">
         <Toolbar sx={{ justifyContent: 'space-between' }}>
-          <Typography 
-            variant="h6" 
-            component={Link} 
-            to="/" 
-            sx={{ 
-              fontWeight: 700, 
-              textDecoration: 'none', 
-              color: theme.palette.primary.dark,
-              fontFamily: '"Gaegu", sans-serif',
-              fontSize: '1.8rem'
-            }}
-          >
-            OZ 타임캡슐
-          </Typography>
+          <Box sx={{ flexGrow: 1, display: 'flex', alignItems: 'center' }}>
+            <motion.div
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <Typography 
+                variant="h6" 
+                component={Link} 
+                to="/" 
+                sx={{ 
+                  fontWeight: 700, 
+                  textDecoration: 'none', 
+                  color: theme.palette.primary.dark,
+                  fontFamily: '"Gaegu", sans-serif',
+                  fontSize: '1.8rem'
+                }}
+              >
+                OZ 타임캡슐
+              </Typography>
+            </motion.div>
+          </Box>
           
           {isMobile ? (
             <Box>
@@ -225,6 +238,29 @@ const Navbar: React.FC = () => {
               )}
             </Box>
           )}
+
+          <Box sx={{ display: 'flex', gap: 1 }}>
+            <motion.div
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <Tooltip title="비밀 통로" placement="bottom">
+                <IconButton
+                  onClick={() => navigate('/secret')}
+                  sx={{
+                    color: '#8B4513',
+                    '&:hover': {
+                      background: 'rgba(139, 69, 19, 0.1)',
+                      transform: 'rotate(15deg)'
+                    },
+                    transition: 'transform 0.3s ease'
+                  }}
+                >
+                  <LockIcon />
+                </IconButton>
+              </Tooltip>
+            </motion.div>
+          </Box>
         </Toolbar>
       </Container>
     </AppBar>

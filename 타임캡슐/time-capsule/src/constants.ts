@@ -1,9 +1,9 @@
 export const CAMP_OPTIONS = [
-  { value: '1', label: '초격차 BE' },
-  { value: '2', label: '초격차 FE' },
-  { value: '3', label: '사업개발 BD' },
-  { value: '4', label: '풀스택 FSO' },
-  { value: '5', label: '디자이너 PD' }
+  { value: 'BACK', label: '초격차 BE' },
+  { value: 'FRNT', label: '초격차 FE' },
+  { value: 'BIZD', label: '사업개발 BD' },
+  { value: 'FULL', label: '풀스택 FSO' },
+  { value: 'DESN', label: '디자이너 PD' }
 ];
 
 export const FONT_OPTIONS = [

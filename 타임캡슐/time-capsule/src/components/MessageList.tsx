@@ -46,6 +46,15 @@ interface Message {
   imageUrl?: string;
 }
 
+// 숫자형 캠프 코드와 문자형 캠프 코드 매핑 테이블
+const CAMP_CODE_MAP: Record<string, string> = {
+  '1': 'BACK',
+  '2': 'FRNT',
+  '3': 'BIZD',
+  '4': 'FULL',
+  '5': 'DESN'
+};
+
 const MessageList: React.FC = () => {
   // 상태 관리
   const [messages, setMessages] = useState<Message[]>([]);
@@ -64,12 +73,6 @@ const MessageList: React.FC = () => {
   // 오디오 참조
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
-  // 캠프 ID를 캠프명으로 변환하는 함수
-  const getCampName = (campId: string): string => {
-    const camp = CAMP_OPTIONS.find(camp => camp.value === campId);
-    return camp ? camp.label : campId;
-  };
-
   // 메시지 데이터 로드
   useEffect(() => {
     setLoading(true);
@@ -80,15 +83,15 @@ const MessageList: React.FC = () => {
     const unsubscribeMessages = onSnapshot(q, (snapshot) => {
       const messageData = snapshot.docs.map(doc => {
         const data = doc.data();
-        const campId = data.campId || data.camp || '';
+        const messageCampId = data.campId || data.camp || '';
         
         return {
           id: doc.id,
           ...data,
           name: data.sender || data.name || '',
           message: data.text || data.message || '',
-          camp: getCampName(campId),
-          campId: campId,
+          camp: getCampName(messageCampId),
+          campId: messageCampId,
           batch: data.batch || '1',
           timestamp: data.timestamp?.toDate() || new Date()
         };
@@ -105,12 +108,25 @@ const MessageList: React.FC = () => {
     };
   }, []);
 
+  // 캠프 ID를 캠프명으로 변환하는 함수 (숫자/문자 모두 지원)
+  const getCampName = (campId: string): string => {
+    // 숫자형이면 문자형 코드로 변환
+    const mappedCode = CAMP_CODE_MAP[campId] || campId;
+    const camp = CAMP_OPTIONS.find(camp => camp.value === mappedCode);
+    return camp ? camp.label : campId;
+  };
+
   // 필터 적용
   useEffect(() => {
     let filtered = [...messages];
     
     if (selectedCamp) {
-      filtered = filtered.filter(message => message.campId === selectedCamp || message.camp === selectedCamp);
+      // 선택된 캠프 코드와 매칭되는 모든 코드(숫자/문자) 포함
+      const filterCampIdVariants = [selectedCamp];
+      Object.entries(CAMP_CODE_MAP).forEach(([num, code]) => {
+        if (code === selectedCamp) filterCampIdVariants.push(num);
+      });
+      filtered = filtered.filter(message => filterCampIdVariants.includes(message.campId));
     }
     
     if (selectedBatch) {
@@ -196,8 +212,8 @@ const MessageList: React.FC = () => {
     if (audioRef.current) {
       audioRef.current.volume = 0.5;
       audioRef.current.currentTime = 0;
-      audioRef.current.play().catch(error => {
-        console.error('음악 재생 실패:', error);
+      audioRef.current.play().catch(() => {
+        // 음악 재생 실패 처리 코드
       });
     }
   };
@@ -259,8 +275,8 @@ const MessageList: React.FC = () => {
     hideAllNavElements();
     
     if (!document.fullscreenElement) {
-      document.documentElement.requestFullscreen().catch(err => {
-        console.error("전체화면 전환 실패:", err);
+      document.documentElement.requestFullscreen().catch(() => {
+        // 전체화면 전환 실패 처리 코드
       });
     }
   };
@@ -268,8 +284,8 @@ const MessageList: React.FC = () => {
   // 전체화면 종료 함수
   const exitFullscreen = () => {
     if (document.fullscreenElement) {
-      document.exitFullscreen().catch(err => {
-        console.error("전체화면 종료 실패:", err);
+      document.exitFullscreen().catch(() => {
+        // 전체화면 종료 실패 처리 코드
       });
     }
   };
@@ -278,8 +294,8 @@ const MessageList: React.FC = () => {
   const handleDelete = async (id: string) => {
     try {
       await deleteDoc(doc(db, 'messages', id));
-    } catch (error) {
-      console.error('메시지 삭제 실패:', error);
+    } catch {
+      // 메시지 삭제 실패 처리 코드
     }
   };
 
@@ -525,7 +541,7 @@ const MessageList: React.FC = () => {
                                           fontSize: '1rem'
                                         }}
                                       >
-                                        {message.camp} / {message.batch}기
+                                        {getCampName(message.campId)} / {message.batch}기
                                       </Typography>
                                     </Box>
 
@@ -748,7 +764,7 @@ const MessageList: React.FC = () => {
                         fontFamily: 'Gaegu, serif',
                         fontSize: { xs: '1.1rem', md: '1.3rem' }
                       }}>
-                        {message.camp} / {message.batch}기
+                        {getCampName(message.campId)} / {message.batch}기
                       </Typography>
                       <Typography variant="body1" sx={{ 
                         color: 'white',

@@ -12,6 +12,8 @@ import { auth } from './firebase';
 import { onAuthStateChanged } from 'firebase/auth';
 import { Box } from '@mui/material';
 import { AuthProvider } from './contexts/AuthContext';
+import SecretPassage from './components/SecretPassage';
+import SecretMessageList from './components/SecretMessageList';
 
 const theme = createTheme({
   palette: {
@@ -118,6 +120,8 @@ const AnimatedRoutes = ({ isAuthenticated, isAdmin }: { isAuthenticated: boolean
               } 
             />
             <Route path="/access-denied" element={<AccessDenied />} />
+            <Route path="/secret" element={<SecretPassage />} />
+            <Route path="/secret-messages/:campId/:batch" element={<SecretMessageList />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </Box>

@@ -6,10 +6,12 @@ import {
   signInWithEmailAndPassword, 
   signOut as firebaseSignOut
 } from 'firebase/auth';
+import { auth } from '../firebase';
 
 // Context에서 제공할 값들의 타입 정의
 interface AuthContextType {
   currentUser: User | null;
+  isAdmin: boolean;
   loading: boolean;
   login: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
@@ -18,6 +20,7 @@ interface AuthContextType {
 // 기본값 설정
 const AuthContext = createContext<AuthContextType>({
   currentUser: null,
+  isAdmin: false,
   loading: true,
   login: async () => {},
   logout: async () => {}
@@ -35,6 +38,7 @@ interface AuthProviderProps {
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
   const auth = getAuth();
 
@@ -61,6 +65,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setCurrentUser(user);
       setLoading(false);
+      
+      // 로그인된 사용자가 있고 localStorage에 isAdmin 값이 있으면 관리자로 설정
+      if (user) {
+        const localAdmin = localStorage.getItem('isAdmin') === 'true';
+        const sessionAdmin = sessionStorage.getItem('isAdmin') === 'true';
+        setIsAdmin(localAdmin || sessionAdmin);
+      } else {
+        setIsAdmin(false);
+      }
     });
 
     return unsubscribe;
@@ -68,6 +81,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const value = {
     currentUser,
+    isAdmin,
     loading,
     login,
     logout
