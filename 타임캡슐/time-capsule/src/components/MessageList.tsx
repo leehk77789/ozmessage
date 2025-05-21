@@ -30,6 +30,7 @@ import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
 import VolumeUpIcon from '@mui/icons-material/VolumeUp';
 import VolumeMuteIcon from '@mui/icons-material/VolumeMute';
 import { CAMP_OPTIONS } from '../constants';
+import { motion } from 'framer-motion';
 
 // 메시지 인터페이스 정의
 interface Message {
@@ -164,15 +165,22 @@ const MessageList: React.FC = () => {
     hideAllNavElements();
     playBackgroundMusic();
     
+    // 메시지 길이에 따라 재생 시간 계산
+    const totalDuration = filteredMessages.reduce((acc, message) => {
+      const messageLength = message.message?.length || 0;
+      // 메시지 길이에 따라 8-20초 사이로 조정 (더 긴 시간)
+      const duration = Math.max(8, Math.min(20, Math.ceil(messageLength / 30) * 5));
+      return acc + duration;
+    }, 0);
+    
     // 모든 메시지 재생 후 감사 메시지 표시 및 종료
-    const lastMessageDuration = (filteredMessages.length - 1) * 8 + 15 + 2;
     setTimeout(() => {
       setShowThankYou(true);
       
       setTimeout(() => {
         endPlayback();
       }, 8000);
-    }, lastMessageDuration * 1000);
+    }, totalDuration * 1000);
   };
   
   // 재생 종료 공통 기능
@@ -446,86 +454,157 @@ const MessageList: React.FC = () => {
                               nodeRef={nodeRefs[index]}
                             >
                               <Box ref={nodeRefs[index]}>
-                                <ListItem 
-                                  alignItems="flex-start"
-                                  sx={{ 
-                                    transition: 'background-color 0.3s ease',
-                                    '&:hover': { backgroundColor: 'rgba(167, 201, 87, 0.05)' } 
+                                <motion.div
+                                  initial={{ 
+                                    opacity: 0,
+                                    scale: 0.8,
+                                    y: 50,
+                                    rotateX: -30,
+                                    transformOrigin: 'center bottom'
+                                  }}
+                                  animate={{ 
+                                    opacity: 1,
+                                    scale: 1,
+                                    y: 0,
+                                    rotateX: 0
+                                  }}
+                                  exit={{ 
+                                    opacity: 0,
+                                    scale: 0.8,
+                                    y: -50,
+                                    rotateX: 30,
+                                    transformOrigin: 'center top'
+                                  }}
+                                  transition={{ 
+                                    duration: 0.8,
+                                    ease: [0.4, 0, 0.2, 1],
+                                    delay: index * 0.2
+                                  }}
+                                  style={{
+                                    width: '100%',
+                                    maxWidth: '800px',
+                                    margin: '0 auto',
+                                    perspective: '1000px'
                                   }}
                                 >
-                                  <ListItemText
-                                    primary={
-                                      <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                                        <Typography variant="h6" className="ghibli-subtitle">
-                                          {message.name}
-                                        </Typography>
-                                        <Typography
-                                          component="span"
-                                          variant="body2"
-                                          sx={{ ml: 2, opacity: 0.6 }}
-                                        >
-                                          {message.camp} / {message.batch}기
-                                        </Typography>
-                                      </Box>
-                                    }
-                                    secondary={
-                                      <>
-                                        <Typography
-                                          component="span"
-                                          variant="body1"
-                                          className="ghibli-text"
-                                          sx={{ 
-                                            display: 'inline-block',
-                                            my: 1,
-                                            p: 1.5,
-                                            backgroundColor: 'rgba(248, 244, 227, 0.6)', 
-                                            borderRadius: '8px',
-                                            whiteSpace: 'pre-line'
-                                          }}
-                                        >
-                                          {message.message}
-                                        </Typography>
-                                        
-                                        {message.imageUrl && (
-                                          <Box sx={{ my: 2, maxWidth: '100%', textAlign: 'center' }}>
-                                            <img 
-                                              src={message.imageUrl} 
-                                              alt="첨부 이미지"
-                                              style={{ 
-                                                maxWidth: '100%', 
-                                                maxHeight: '300px', 
-                                                borderRadius: '8px',
-                                                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)'
-                                              }}
-                                            />
-                                          </Box>
-                                        )}
-                                        
-                                        <br />
-                                        <Typography
-                                          component="span"
-                                          variant="caption"
-                                          className="ghibli-text"
-                                          sx={{ opacity: 0.8 }}
-                                        >
-                                          작성일: {formatDate(message.timestamp)}
-                                        </Typography>
-                                      </>
-                                    }
-                                  />
-                                  <Tooltip title="삭제" arrow>
-                                    <IconButton
-                                      color="error"
-                                      onClick={() => handleDelete(message.id)}
-                                      sx={{ 
-                                        '&:hover': { backgroundColor: 'rgba(239, 83, 80, 0.1)' } 
+                                  <Paper
+                                    elevation={3}
+                                    sx={{
+                                      p: 3,
+                                      mb: 3,
+                                      background: 'rgba(255, 255, 255, 0.95)',
+                                      borderRadius: 2,
+                                      boxShadow: '0 4px 20px rgba(0, 0, 0, 0.1)',
+                                      border: '1px solid rgba(139, 69, 19, 0.1)',
+                                      transformStyle: 'preserve-3d',
+                                      '&:hover': {
+                                        boxShadow: '0 6px 25px rgba(0, 0, 0, 0.15)',
+                                        transform: 'translateY(-2px)'
+                                      }
+                                    }}
+                                  >
+                                    <Box sx={{ mb: 2 }}>
+                                      <Typography
+                                        variant="h6"
+                                        component="h3"
+                                        sx={{
+                                          color: '#8B4513',
+                                          fontFamily: 'Gaegu, cursive',
+                                          fontSize: '1.3rem',
+                                          fontWeight: 'bold',
+                                          mb: 1
+                                        }}
+                                      >
+                                        {message.name}
+                                      </Typography>
+                                      <Typography
+                                        variant="body2"
+                                        sx={{
+                                          color: '#654321',
+                                          fontFamily: 'Gaegu, cursive',
+                                          fontSize: '1rem'
+                                        }}
+                                      >
+                                        {message.camp} / {message.batch}기
+                                      </Typography>
+                                    </Box>
+
+                                    <Typography
+                                      variant="body1"
+                                      sx={{
+                                        color: '#333',
+                                        fontFamily: 'Gaegu, cursive',
+                                        fontSize: '1.1rem',
+                                        lineHeight: 1.6,
+                                        whiteSpace: 'pre-wrap',
+                                        wordBreak: 'keep-all',
+                                        mb: message.imageUrl ? 2 : 0
                                       }}
                                     >
-                                      <DeleteIcon />
-                                    </IconButton>
-                                  </Tooltip>
-                                </ListItem>
-                                {index < currentMessages.length - 1 && <Divider />}
+                                      {message.message}
+                                    </Typography>
+
+                                    {message.imageUrl && (
+                                      <Box
+                                        sx={{
+                                          mt: 2,
+                                          borderRadius: 2,
+                                          overflow: 'hidden',
+                                          boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)'
+                                        }}
+                                      >
+                                        <img
+                                          src={message.imageUrl}
+                                          alt="첨부된 이미지"
+                                          style={{
+                                            width: '100%',
+                                            maxHeight: '400px',
+                                            objectFit: 'contain',
+                                            borderRadius: '8px'
+                                          }}
+                                        />
+                                      </Box>
+                                    )}
+
+                                    <Box sx={{ 
+                                      mt: 2, 
+                                      display: 'flex', 
+                                      justifyContent: 'space-between',
+                                      alignItems: 'center',
+                                      borderTop: '1px solid rgba(139, 69, 19, 0.1)',
+                                      pt: 2
+                                    }}>
+                                      <Typography
+                                        variant="caption"
+                                        sx={{
+                                          color: '#8B4513',
+                                          fontFamily: 'Gaegu, cursive',
+                                          fontSize: '0.9rem',
+                                          opacity: 0.8
+                                        }}
+                                      >
+                                        작성일: {formatDate(message.timestamp)}
+                                      </Typography>
+                                      <Tooltip title="메시지 삭제" arrow>
+                                        <IconButton
+                                          onClick={() => {
+                                            if (window.confirm('정말로 이 메시지를 삭제하시겠습니까?')) {
+                                              handleDelete(message.id);
+                                            }
+                                          }}
+                                          sx={{
+                                            color: '#8B4513',
+                                            '&:hover': {
+                                              backgroundColor: 'rgba(139, 69, 19, 0.1)'
+                                            }
+                                          }}
+                                        >
+                                          <DeleteIcon />
+                                        </IconButton>
+                                      </Tooltip>
+                                    </Box>
+                                  </Paper>
+                                </motion.div>
                               </Box>
                             </CSSTransition>
                           ))}
@@ -602,99 +681,110 @@ const MessageList: React.FC = () => {
               alignItems: 'center',
               justifyContent: 'flex-start'
             }}>
-              {filteredMessages.map((message, index) => (
-                <Box
-                  key={message.id}
-                  sx={{
-                    position: 'absolute',
-                    width: '100%',
-                    textAlign: 'center',
-                    animation: `credits ${15}s linear ${index * 8}s forwards`,
-                    opacity: 0,
-                    '@keyframes credits': {
-                      '0%': { transform: 'translateY(100vh)', opacity: 0 },
-                      '10%': { transform: 'translateY(70vh)', opacity: 1 },
-                      '90%': { transform: 'translateY(10vh)', opacity: 1 },
-                      '100%': { transform: 'translateY(-30vh)', opacity: 0 }
-                    }
-                  }}
-                >
-                  <Box sx={{
-                    backgroundColor: 'rgba(255, 255, 255, 0.15)',
-                    padding: '20px',
-                    width: { xs: '90%', sm: '80%', md: '70%' },
-                    maxWidth: '800px',
-                    maxHeight: '60vh',
-                    margin: '0 auto',
-                    borderRadius: '8px',
-                    overflow: 'auto',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    backdropFilter: 'blur(5px)',
-                    boxShadow: '0 4px 30px rgba(0, 0, 0, 0.3)',
-                    border: '1px solid rgba(255, 255, 255, 0.1)',
-                    '&::-webkit-scrollbar': {
-                      width: '8px',
-                    },
-                    '&::-webkit-scrollbar-track': {
-                      background: 'rgba(255, 255, 255, 0.1)'
-                    },
-                    '&::-webkit-scrollbar-thumb': {
-                      background: 'rgba(255, 255, 255, 0.3)',
-                      borderRadius: '4px',
-                    }
-                  }}>
-                    <Box sx={{ 
-                      display: 'flex', 
-                      alignItems: 'center', 
-                      justifyContent: 'space-between', 
-                      mb: 1
+              {filteredMessages.map((message, index) => {
+                const messageLength = message.message?.length || 0;
+                // 메시지 길이에 따라 20~80초 사이로, 길수록 더 천천히
+                const duration = Math.max(20, Math.min(80, Math.ceil(messageLength * 0.7)));
+                // startDelay는 이전 메시지의 길이에 따라 동적으로 조정
+                const startDelay = filteredMessages
+                  .slice(0, index)
+                  .reduce((acc, msg) => {
+                    const msgLength = msg.message?.length || 0;
+                    const prevDuration = Math.max(20, Math.min(80, Math.ceil(msgLength * 0.7)));
+                    // 메시지 길이에 따라 대기 시간 조정 (짧은 메시지는 더 빨리, 긴 메시지는 현재처럼)
+                    const waitTime = msgLength < 100 ? prevDuration * 0.4 : 
+                                   msgLength < 300 ? prevDuration * 0.6 :
+                                   prevDuration * 0.8;
+                    return acc + waitTime;
+                  }, 0);
+                
+                return (
+                  <Box
+                    key={message.id}
+                    sx={{
+                      position: 'absolute',
+                      width: '100%',
+                      textAlign: 'center',
+                      animation: `scrollUp ${duration}s linear ${startDelay}s forwards`,
+                      opacity: 0,
+                      '@keyframes scrollUp': {
+                        '0%': { transform: 'translateY(100vh)', opacity: 0 },
+                        '5%': { transform: 'translateY(90vh)', opacity: 1 },
+                        '100%': { transform: 'translateY(-200vh)', opacity: 1 }
+                      }
+                    }}
+                  >
+                    <Box sx={{
+                      backgroundColor: 'rgba(255, 255, 255, 0.15)',
+                      padding: '30px',
+                      width: { xs: '95%', sm: '90%', md: '85%' },
+                      maxWidth: '1200px',
+                      margin: '0 auto',
+                      borderRadius: '12px',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      backdropFilter: 'blur(5px)',
+                      boxShadow: '0 4px 30px rgba(0, 0, 0, 0.3)',
+                      border: '1px solid rgba(255, 255, 255, 0.1)',
+                      transform: 'scale(0.95)',
+                      transition: 'transform 0.3s ease',
+                      '&:hover': {
+                        transform: 'scale(1)'
+                      }
                     }}>
-                      <Typography variant="h4" sx={{ 
-                        mb: 1, 
-                        color: '#f1c40f',
+                      <Typography variant="h5" sx={{ 
+                        color: 'white',
+                        mb: 2,
                         fontFamily: 'Gaegu, serif',
+                        fontSize: { xs: '1.8rem', md: '2.2rem' },
                         fontWeight: 'bold',
                         textShadow: '2px 2px 4px rgba(0, 0, 0, 0.5)'
                       }}>
                         {message.name}
                       </Typography>
                       <Typography variant="subtitle1" sx={{ 
-                        color: 'rgba(255, 255, 255, 0.7)',
-                        fontFamily: 'Gaegu, serif'
+                        color: 'rgba(255, 255, 255, 0.8)',
+                        mb: 3,
+                        fontFamily: 'Gaegu, serif',
+                        fontSize: { xs: '1.1rem', md: '1.3rem' }
                       }}>
                         {message.camp} / {message.batch}기
                       </Typography>
+                      <Typography variant="body1" sx={{ 
+                        color: 'white',
+                        whiteSpace: 'pre-line',
+                        lineHeight: 1.8,
+                        fontSize: { xs: '1rem', md: '1.2rem' },
+                        fontFamily: 'Gaegu, serif',
+                        textShadow: '1px 1px 2px rgba(0, 0, 0, 0.3)',
+                        wordBreak: 'keep-all',
+                        maxWidth: '100%',
+                        px: { xs: 1, md: 2 }
+                      }}>
+                        {message.message}
+                      </Typography>
+                      {message.imageUrl && (
+                        <Box sx={{ 
+                          mt: 3,
+                          display: 'flex',
+                          justifyContent: 'center'
+                        }}>
+                          <img 
+                            src={message.imageUrl} 
+                            alt="첨부 이미지"
+                            style={{ 
+                              maxWidth: '100%',
+                              maxHeight: '400px',
+                              borderRadius: '8px',
+                              boxShadow: '0 4px 20px rgba(0, 0, 0, 0.2)'
+                            }}
+                          />
+                        </Box>
+                      )}
                     </Box>
-                    <Typography variant="h6" sx={{ 
-                      color: 'white',
-                      fontFamily: 'Gaegu, serif',
-                      lineHeight: 1.6,
-                      whiteSpace: 'pre-line',
-                      wordBreak: 'keep-all',
-                      overflowWrap: 'break-word',
-                      flex: 1
-                    }}>
-                      {message.message}
-                    </Typography>
-
-                    {message.imageUrl && (
-                      <Box sx={{ mt: 2, textAlign: 'center' }}>
-                        <img 
-                          src={message.imageUrl}
-                          alt="첨부 이미지"
-                          style={{ 
-                            maxWidth: '100%', 
-                            maxHeight: '200px', 
-                            borderRadius: '8px',
-                            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)'
-                          }}
-                        />
-                      </Box>
-                    )}
                   </Box>
-                </Box>
-              ))}
+                );
+              })}
 
               {/* 감사 메시지 */}
               {showThankYou && (

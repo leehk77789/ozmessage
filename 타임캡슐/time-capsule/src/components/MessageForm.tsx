@@ -12,6 +12,7 @@ import { styled } from '@mui/material/styles';
 import LinearProgress from '@mui/material/LinearProgress';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import { useTheme } from '@mui/material/styles';
+import MessageComplete from './MessageComplete';
 
 // 이미지 업로드 인풋을 위한 스타일 컴포넌트
 const VisuallyHiddenInput = styled('input')({
@@ -43,6 +44,7 @@ const MessageForm: React.FC = () => {
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [mainImageLoaded, setMainImageLoaded] = useState(false);
   const [pageReady, setPageReady] = useState(false);
+  const [showComplete, setShowComplete] = useState(false);
 
   // 페이지 초기화 효과
   useEffect(() => {
@@ -220,8 +222,9 @@ const MessageForm: React.FC = () => {
     }
 
     try {
-      // 이미지 처리
+      setUploading(true);
       let uploadedImageUrl = '';
+      
       if (imageFile) {
         uploadedImageUrl = await handleImageUpload(imageFile);
       }
@@ -240,15 +243,19 @@ const MessageForm: React.FC = () => {
       // 폼 초기화 및 성공 상태 설정
       resetForm();
       setSubmitted(true);
+      setShowComplete(true);
       
       // 4초 후 폼 다시 보이게 설정
       setTimeout(() => {
         setSubmitted(false);
+        setShowComplete(false);
       }, 4000);
       
     } catch (error) {
       console.error("메시지 저장 중 오류 발생:", error);
       alert('메시지 저장에 실패했습니다. 다시 시도해주세요.');
+    } finally {
+      setUploading(false);
     }
   };
   
@@ -299,8 +306,10 @@ const MessageForm: React.FC = () => {
               textAlign: 'center', 
               mb: 4,
               fontWeight: 'bold',
-              color: '#1a3e72',
-              textShadow: '0px 1px 2px rgba(0,0,0,0.1)'
+              color: '#8B4513',
+              textShadow: '0px 2px 4px rgba(0,0,0,0.1)',
+              fontFamily: 'Gaegu, cursive',
+              fontSize: { xs: '2rem', sm: '2.5rem' }
             }}
           >
             타임캡슐 메시지 작성
@@ -311,7 +320,12 @@ const MessageForm: React.FC = () => {
             display: 'flex', 
             justifyContent: 'center', 
             mb: 4, 
-            mt: 2
+            mt: 2,
+            transform: 'scale(0.95)',
+            transition: 'transform 0.3s ease',
+            '&:hover': {
+              transform: 'scale(1)'
+            }
           }}>
             <img 
               src="/images/오즈코딩스쿨타임캡슐.png" 
@@ -319,7 +333,8 @@ const MessageForm: React.FC = () => {
               style={{ 
                 width: '100%', 
                 maxHeight: '300px', 
-                objectFit: 'contain' 
+                objectFit: 'contain',
+                filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.15))'
               }}
             />
           </Box>
@@ -332,12 +347,14 @@ const MessageForm: React.FC = () => {
               elevation={3} 
               sx={{ 
                 p: { xs: 2, sm: 4 }, 
-                borderRadius: 2,
-                backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                borderRadius: 3,
+                background: 'rgba(255, 255, 255, 0.95)',
                 backdropFilter: 'blur(10px)',
-                transition: 'box-shadow 0.3s ease-in-out',
+                transition: 'all 0.3s ease-in-out',
+                border: '1px solid rgba(255, 255, 255, 0.2)',
                 '&:hover': {
-                  boxShadow: '0 8px 24px rgba(0,0,0,0.12)'
+                  boxShadow: '0 8px 32px rgba(0,0,0,0.1)',
+                  transform: 'translateY(-2px)'
                 }
               }}
             >
@@ -347,7 +364,19 @@ const MessageForm: React.FC = () => {
                 variant="outlined"
                 value={sender}
                 onChange={(e) => setSender(e.target.value)}
-                sx={{ mb: 3 }}
+                sx={{ 
+                  mb: 3,
+                  '& .MuiOutlinedInput-root': {
+                    borderRadius: 2,
+                    '&:hover fieldset': {
+                      borderColor: '#8B4513',
+                    },
+                  },
+                  '& .MuiInputLabel-root': {
+                    fontFamily: 'Gaegu, cursive',
+                    fontSize: '1.1rem'
+                  }
+                }}
                 required
               />
               
@@ -359,23 +388,69 @@ const MessageForm: React.FC = () => {
                 onChange={(e) => setMessage(e.target.value)}
                 multiline
                 rows={4}
-                sx={{ mb: 3 }}
+                sx={{ 
+                  mb: 3,
+                  '& .MuiOutlinedInput-root': {
+                    borderRadius: 2,
+                    '&:hover fieldset': {
+                      borderColor: '#8B4513',
+                    },
+                  },
+                  '& .MuiInputLabel-root': {
+                    fontFamily: 'Gaegu, cursive',
+                    fontSize: '1.1rem'
+                  }
+                }}
                 required
               />
               
               {/* 캠프 선택과 기수 선택 */}
-              <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, gap: 2, mb: 3 }}>
+              <Box sx={{ 
+                display: 'flex', 
+                flexDirection: { xs: 'column', sm: 'row' }, 
+                gap: 2, 
+                mb: 3 
+              }}>
                 <FormControl fullWidth>
-                  <InputLabel id="camp-select-label">캠프 선택</InputLabel>
+                  <InputLabel 
+                    id="camp-select-label"
+                    sx={{
+                      fontFamily: 'Gaegu, cursive',
+                      fontSize: '1.1rem'
+                    }}
+                  >
+                    캠프 선택
+                  </InputLabel>
                   <Select
                     labelId="camp-select-label"
                     value={campId}
                     label="캠프 선택"
                     onChange={(e: SelectChangeEvent) => setCampId(e.target.value)}
                     required
+                    sx={{
+                      borderRadius: 2,
+                      '& .MuiOutlinedInput-notchedOutline': {
+                        '&:hover': {
+                          borderColor: '#8B4513',
+                        },
+                      },
+                      '& .MuiSelect-select': {
+                        fontFamily: 'Gaegu, cursive',
+                        fontSize: '1.1rem'
+                      }
+                    }}
                   >
                     {CAMP_OPTIONS.map((camp) => (
-                      <MenuItem key={camp.value} value={camp.value}>{camp.label}</MenuItem>
+                      <MenuItem 
+                        key={camp.value} 
+                        value={camp.value}
+                        sx={{
+                          fontFamily: 'Gaegu, cursive',
+                          fontSize: '1.1rem'
+                        }}
+                      >
+                        {camp.label}
+                      </MenuItem>
                     ))}
                   </Select>
                 </FormControl>
@@ -388,7 +463,6 @@ const MessageForm: React.FC = () => {
                   placeholder="숫자만 입력 (예: 1, 2, 3...)"
                   value={batch}
                   onChange={(e) => {
-                    // 숫자만 입력 가능하도록 설정
                     const value = e.target.value.replace(/\D/g, '');
                     setBatch(value);
                   }}
@@ -397,41 +471,100 @@ const MessageForm: React.FC = () => {
                     pattern: '[0-9]*'
                   }}
                   required
+                  sx={{
+                    '& .MuiOutlinedInput-root': {
+                      borderRadius: 2,
+                      '&:hover fieldset': {
+                        borderColor: '#8B4513',
+                      },
+                    },
+                    '& .MuiInputLabel-root': {
+                      fontFamily: 'Gaegu, cursive',
+                      fontSize: '1.1rem'
+                    }
+                  }}
                 />
               </Box>
               
               {/* 이미지 업로드 섹션 */}
-              <Box sx={{ mb: 3 }}>
-                <Button
-                  component="label"
-                  variant="outlined"
-                  startIcon={<AddPhotoAlternateIcon />}
-                  sx={{ mb: 2 }}
-                  disabled={!!imageFile || uploading}
-                >
-                  이미지 추가
-                  <VisuallyHiddenInput type="file" accept="image/*" onChange={handleFileChange} />
-                </Button>
+              <Box sx={{ 
+                mb: 3,
+                p: 3,
+                border: '2px dashed #8B4513',
+                borderRadius: 3,
+                background: 'rgba(139, 69, 19, 0.03)',
+                transition: 'all 0.3s ease',
+                '&:hover': {
+                  background: 'rgba(139, 69, 19, 0.06)',
+                  borderColor: '#654321'
+                }
+              }}>
+                <Box sx={{ textAlign: 'center', mb: 2 }}>
+                  <Typography 
+                    variant="subtitle1" 
+                    sx={{ 
+                      mb: 2, 
+                      color: '#8B4513',
+                      fontFamily: 'Gaegu, cursive',
+                      fontSize: '1.2rem'
+                    }}
+                  >
+                    이미지를 추가해보세요
+                  </Typography>
+                  <Button
+                    component="label"
+                    variant="outlined"
+                    startIcon={<AddPhotoAlternateIcon />}
+                    disabled={!!imageFile || uploading}
+                    sx={{
+                      borderRadius: 30,
+                      textTransform: 'none',
+                      borderColor: '#8B4513',
+                      color: '#8B4513',
+                      fontFamily: 'Gaegu, cursive',
+                      fontSize: '1.1rem',
+                      padding: '8px 24px',
+                      '&:hover': {
+                        borderColor: '#654321',
+                        backgroundColor: 'rgba(139, 69, 19, 0.04)'
+                      }
+                    }}
+                  >
+                    이미지 선택
+                    <VisuallyHiddenInput type="file" accept="image/*" onChange={handleFileChange} />
+                  </Button>
+                </Box>
                 
                 {previewUrl && (
-                  <Box sx={{ position: 'relative', mt: 2 }}>
+                  <Box sx={{ 
+                    position: 'relative',
+                    mt: 2,
+                    p: 2,
+                    background: 'rgba(255, 255, 255, 0.9)',
+                    borderRadius: 2,
+                    boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+                  }}>
                     <img 
                       src={previewUrl} 
                       alt="미리보기" 
                       style={{ 
-                        maxWidth: '100%', 
-                        maxHeight: '200px', 
-                        borderRadius: '8px',
-                        border: '1px solid #eee'
+                        width: '100%',
+                        maxHeight: '300px',
+                        objectFit: 'contain',
+                        borderRadius: '12px'
                       }} 
                     />
                     <IconButton
                       sx={{
                         position: 'absolute',
-                        top: -12,
-                        right: -12,
-                        backgroundColor: 'rgba(255,255,255,0.9)',
-                        '&:hover': { backgroundColor: 'rgba(255,255,255,1)' }
+                        top: 8,
+                        right: 8,
+                        background: 'rgba(255,255,255,0.9)',
+                        boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+                        '&:hover': { 
+                          background: 'rgba(255,255,255,1)',
+                          transform: 'scale(1.1)'
+                        }
                       }}
                       size="small"
                       onClick={removeImage}
@@ -443,8 +576,30 @@ const MessageForm: React.FC = () => {
                 
                 {uploading && (
                   <Box sx={{ width: '100%', mt: 2 }}>
-                    <LinearProgress variant="determinate" value={uploadProgress} />
-                    <Typography variant="caption" sx={{ mt: 1, display: 'block' }}>
+                    <LinearProgress 
+                      variant="determinate" 
+                      value={uploadProgress}
+                      sx={{
+                        height: 8,
+                        borderRadius: 4,
+                        backgroundColor: 'rgba(139, 69, 19, 0.1)',
+                        '& .MuiLinearProgress-bar': {
+                          borderRadius: 4,
+                          background: 'linear-gradient(45deg, #8B4513 30%, #654321 90%)'
+                        }
+                      }}
+                    />
+                    <Typography 
+                      variant="caption" 
+                      sx={{ 
+                        mt: 1, 
+                        display: 'block',
+                        textAlign: 'center',
+                        color: '#8B4513',
+                        fontFamily: 'Gaegu, cursive',
+                        fontSize: '1rem'
+                      }}
+                    >
                       업로드 중... {uploadProgress}%
                     </Typography>
                   </Box>
@@ -456,20 +611,28 @@ const MessageForm: React.FC = () => {
                 <Button
                   type="submit"
                   variant="contained"
-                  color="primary"
                   size="large"
                   endIcon={<SendIcon />}
                   disabled={!message || !sender || !campId || !batch || uploading}
                   sx={{
                     py: 1.5,
-                    px: 4,
-                    borderRadius: 8,
+                    px: 6,
+                    borderRadius: 30,
+                    background: 'linear-gradient(45deg, #8B4513 30%, #654321 90%)',
+                    color: 'white',
+                    fontFamily: 'Gaegu, cursive',
+                    fontSize: '1.2rem',
                     fontWeight: 'bold',
-                    boxShadow: '0 4px 10px rgba(25, 118, 210, 0.3)',
+                    boxShadow: '0 4px 20px rgba(139, 69, 19, 0.3)',
                     transition: 'all 0.3s',
                     '&:hover': {
                       transform: 'translateY(-2px)',
-                      boxShadow: '0 6px 15px rgba(25, 118, 210, 0.4)',
+                      boxShadow: '0 6px 25px rgba(139, 69, 19, 0.4)',
+                      background: 'linear-gradient(45deg, #654321 30%, #8B4513 90%)',
+                    },
+                    '&:disabled': {
+                      background: 'linear-gradient(45deg, #9e9e9e 30%, #757575 90%)',
+                      color: 'rgba(255, 255, 255, 0.7)'
                     }
                   }}
                 >
@@ -479,132 +642,10 @@ const MessageForm: React.FC = () => {
             </Paper>
           )}
           
-          {/* 제출 완료 메시지 */}
-          {submitted && (
-            <Box 
-              sx={{
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                position: 'fixed',
-                top: '50%',
-                left: '50%',
-                transform: 'translate(-50%, -50%)',
-                width: '90%',
-                maxWidth: '600px',
-                textAlign: 'center',
-                p: 4,
-                bgcolor: 'rgba(255, 255, 255, 0.95)',
-                backdropFilter: 'blur(15px)',
-                borderRadius: 6,
-                boxShadow: '0 12px 40px rgba(0, 0, 0, 0.25)',
-                zIndex: 1500,
-                opacity: 1
-              }}
-              className="success-message"
-            >
-              <Box
-                sx={{
-                  position: 'relative',
-                  width: 120,
-                  height: 120,
-                  mb: 3,
-                  animation: 'float 3s ease-in-out infinite'
-                }}
-              >
-                <Box
-                  sx={{
-                    position: 'absolute',
-                    width: 100,
-                    height: 80,
-                    bgcolor: theme.palette.primary.main,
-                    borderRadius: 2,
-                    top: 0,
-                    left: '50%',
-                    transform: 'translateX(-50%)',
-                    boxShadow: '0 4px 12px rgba(167, 201, 87, 0.5)',
-                    '&::before': {
-                      content: '""',
-                      position: 'absolute',
-                      width: 40,
-                      height: 15,
-                      bgcolor: theme.palette.primary.dark,
-                      top: -15,
-                      left: '50%',
-                      transform: 'translateX(-50%)',
-                      borderTopLeftRadius: 5,
-                      borderTopRightRadius: 5
-                    }
-                  }}
-                />
-                <Box
-                  sx={{
-                    position: 'absolute',
-                    width: 120,
-                    height: 30,
-                    bgcolor: theme.palette.secondary.main,
-                    borderRadius: 2,
-                    bottom: 0,
-                    left: '50%',
-                    transform: 'translateX(-50%)',
-                    boxShadow: '0 4px 12px rgba(188, 108, 37, 0.5)'
-                  }}
-                />
-              </Box>
-              <Typography 
-                variant="h5" 
-                sx={{ 
-                  fontWeight: 'bold',
-                  mb: 2, 
-                  color: theme.palette.primary.dark,
-                  fontFamily: '"Gaegu", cursive',
-                  fontSize: '1.8rem'
-                }}
-              >
-                타임캡슐이 성공적으로 묻혔습니다!
-              </Typography>
-              <Typography 
-                variant="body1" 
-                sx={{ 
-                  mb: 2, 
-                  color: theme.palette.text.primary,
-                  lineHeight: 1.6,
-                  maxWidth: 500 
-                }}
-              >
-                소중한 메시지를 타임캡슐에 담아주셔서 감사합니다. 여러분의 메시지는 안전하게 보관되어 특별한 순간에 다시 만나게 될 거예요.
-              </Typography>
-              <Box 
-                sx={{ 
-                  display: 'flex', 
-                  justifyContent: 'center', 
-                  mt: 2,
-                  '& span': {
-                    display: 'inline-block',
-                    width: 8,
-                    height: 8,
-                    margin: '0 4px',
-                    borderRadius: '50%',
-                    backgroundColor: theme.palette.primary.main,
-                    animation: 'twinkle 1.5s infinite ease-in-out'
-                  },
-                  '& span:nth-of-type(2)': {
-                    animationDelay: '0.3s',
-                    backgroundColor: theme.palette.secondary.main
-                  },
-                  '& span:nth-of-type(3)': {
-                    animationDelay: '0.6s',
-                    backgroundColor: theme.palette.primary.dark
-                  }
-                }}
-              >
-                <span></span>
-                <span></span>
-                <span></span>
-              </Box>
-            </Box>
-          )}
+          <MessageComplete 
+            isVisible={showComplete} 
+            onClose={() => setShowComplete(false)} 
+          />
         </>
       )}
     </Box>
